@@ -17,9 +17,8 @@ local
    %                       1. PartitionToTimedList                             %
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-   
+   % Voir partie de Louis  
 
-   
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    %                                2. Mix                                     %
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -174,6 +173,14 @@ local
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   
+   % Wav file
+
+   fun{Wave Name}
+      {Project.Load Name}
+   end
+
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
    % Fonction Multiplication
    declare
@@ -206,15 +213,39 @@ local
       end
    end
 
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-   
-
-
-
-   fun {Mix P2T Music}
-      
-      {Project.readFile CWD#'wave/animals/cow.wav'}
+   fun {Mix P2T Music} % Structure à modifer
+      case Music of H|T then
+         case H 
+         of samples(P) then
+            {Append P {Mix P2T T}}
+         [] partition(P) then 
+            {Append {Partition P} {Mix P2T T}}
+         [] wave(P) then
+            {Append {Wave P} {Mix P2T T}}
+         [] merge(P) then 
+            {Append {Merge P A} {Mix P2T T}}
+         [] reverse(P) then
+            {Append {Reverse P} {Mix P2T T}}
+         [] repeat(amount:A P) then
+            {Append {Repeat A P} {Mix P2T T}}
+         [] loop(duration:A P) then
+            {Append {Loop A P} {Mix P2T T}}
+         [] clip(low:A high:B P) then
+            {Append {Clip A B P} {Mix P2T T}}
+         [] echo(delay:T decay:A P) then
+            {Append {Echo T A P} {Mix P2T T}}
+         [] fade(start:A out:B P) then
+            {Append {Fade A B P} {Mix P2T T}}
+         [] cut(start:A finish:B P) then
+            {Append {Cut A B P} {Mix P2T T}}
+         else
+            nil
+         end
+      else
+         nil
+      end 
    end
 
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -242,3 +273,6 @@ in
    % Shows the total time to run your code.
    {Browse {IntToFloat {Time}-Start} / 1000.0}
 end
+  
+     
+    

@@ -270,8 +270,7 @@ Music = [1.0 2.0 3.0]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-declare %renvoie 0|0|0|0|0|0|0|0|0|0|0|0|,,, je ne sais pas pq...
+declare %ça marche, attention au argument Start=0.0001 pour avoir la première valeur de la liste
 fun{Cut Start Finish Music}
     local  MaFun Stop1 Start1   in
         Stop1 = {Float.toInt Finish*44100.0}
@@ -298,24 +297,32 @@ fun{Cut Start Finish Music}
         {MaFun 1 Music}
     end
 end
-{Browse {Cut 4.0 9.0 [1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 ]}}
-
+%{Browse {Cut 0.00012 0.00034 [1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 ]}}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-declare %ne renvoie rien vu que j'utilise cut qui ne marche pas
-fun {Loop Duration Music}
-    local  NbrSample LongueurMusic in
-       NbrSample = {FloatToInt Duration*44100.0}   
-       LongueurMusic = {List.length Music}     
-       {Append {Repeat (NbrSample div LongueurMusic) Music} {Cut 0 (NbrSample mod LongueurMusic) Music}}
+declare
+fun{Loop Duration Musique}
+    fun{Loop1 Duration1 Musique1 Accumulateur}
+        if Duration1==0 then Accumulateur
+        else case Musique1 of nil then
+	        {Loop1 Duration1 Musique Accumulateur}
+	        [] H|T then
+	            {Loop1 Duration1-1 T H|Accumulateur}
+	        end
+        end
     end
- end
+in
+   {Reverse {Loop1 {FloatToInt 44100.0*Duration} Musique nil}}
+end
 
+declare
+Duration=0.0004
+Musique=[1 2 3 4 5 6 7 8 9]
+{Browse {Loop Duration Musique}}
 
- {Browse {Loop 16.0 [1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 ]}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
